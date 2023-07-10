@@ -27,16 +27,18 @@
 
                             <tbody class="divide-y divide-gray-200">
                                 @foreach ($alternatif as $key => $value)
-                                    <tr>
-                                        <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
-                                            {{ $value->nama_alternatif }}
-                                        </td>
-                                        @foreach ($value->crip->sortBy('kriteria_id') as $key => $crip)
-                                            <td class="whitespace-nowrap px-4 py-2 text-gray-700">
-                                                {{ $crip->nama_crip }}
+                                    @if (count($value->crip) > 0)
+                                        <tr>
+                                            <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                                                {{ Str::limit($value->nama_alternatif, 35) }}
                                             </td>
-                                        @endforeach
-                                    </tr>
+                                            @foreach ($value->crip->sortBy('kriteria_id') as $key => $crip)
+                                                <td class="whitespace-nowrap px-4 py-2 text-gray-700">
+                                                    {{ $crip->nama_crip }}
+                                                </td>
+                                            @endforeach
+                                        </tr>
+                                    @endif
                                 @endforeach
                             </tbody>
                         </table>
@@ -68,19 +70,19 @@
 
                             <tbody class="divide-y divide-gray-200">
                                 @foreach ($alternatif as $key => $value)
-                                    <tr>
-                                        <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
-                                            {{ $value->kode_alternatif }}
-                                        </td>
-                                        @foreach ($value->crip->sortBy('kriteria_id') as $key => $crip)
-                                            <td class="whitespace-nowrap px-4 py-2 text-gray-700">
-                                                {{ $crip->nilai_crip }}
+                                    @if (count($value->crip) > 0)
+                                        <tr>
+                                            <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                                                {{ $value->kode_alternatif }}
                                             </td>
-                                        @endforeach
-
-                                    </tr>
+                                            @foreach ($value->crip->sortBy('kriteria_id') as $key => $crip)
+                                                <td class="whitespace-nowrap px-4 py-2 text-gray-700">
+                                                    {{ $crip->nilai_crip }}
+                                                </td>
+                                            @endforeach
+                                        </tr>
+                                    @endif
                                 @endforeach
-
                             </tbody>
                         </table>
                     </div>
@@ -120,38 +122,40 @@
                                     $rangking = [];
                                 @endphp
                                 @foreach ($alternatif as $key => $value)
-                                    <tr>
-                                        <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
-                                            {{ $value->kode_alternatif }}
-                                        </td>
-                                        @php
-                                            $total = 0;
-                                        @endphp
-                                        @foreach ($value->crip->sortBy('kriteria_id') as $key => $crip)
-                                            @if ($crip->kriteria->atribut == 'cost')
-                                                @php
-                                                    $normalisasi = $kode_krit[$crip->kriteria->id] / $crip->nilai_crip;
-                                                @endphp
-                                            @elseif($crip->kriteria->atribut == 'benefit')
-                                                @php
-                                                    $normalisasi = $crip->nilai_crip / $kode_krit[$crip->kriteria->id];
-                                                @endphp
-                                            @endif
-                                            @php
-                                                $total = $total + $bobot[$crip->kriteria->id] * round($normalisasi, 2);
-                                            @endphp
-                                            <td class="whitespace-nowrap px-4 py-2 text-gray-700">
-                                                {{ round($normalisasi, 2) }}
+                                    @if (count($value->crip) > 0)
+                                        <tr>
+                                            <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                                                {{ $value->kode_alternatif }}
                                             </td>
-                                        @endforeach
-                                        @php
-                                            $rangking[] = [
-                                                'kode' => $value->kode_alternatif,
-                                                'nama' => $value->nama_alternatif,
-                                                'total' => $total,
-                                            ];
-                                        @endphp
-                                    </tr>
+                                            @php
+                                                $total = 0;
+                                            @endphp
+                                            @foreach ($value->crip->sortBy('kriteria_id') as $key => $crip)
+                                                @if ($crip->kriteria->atribut == 'cost')
+                                                    @php
+                                                        $normalisasi = $kode_krit[$crip->kriteria->id] / $crip->nilai_crip;
+                                                    @endphp
+                                                @elseif($crip->kriteria->atribut == 'benefit')
+                                                    @php
+                                                        $normalisasi = $crip->nilai_crip / $kode_krit[$crip->kriteria->id];
+                                                    @endphp
+                                                @endif
+                                                @php
+                                                    $total = $total + $bobot[$crip->kriteria->id] * round($normalisasi, 2);
+                                                @endphp
+                                                <td class="whitespace-nowrap px-4 py-2 text-gray-700">
+                                                    {{ round($normalisasi, 2) }}
+                                                </td>
+                                            @endforeach
+                                            @php
+                                                $rangking[] = [
+                                                    'kode' => $value->kode_alternatif,
+                                                    'nama' => $value->nama_alternatif,
+                                                    'total' => $total,
+                                                ];
+                                            @endphp
+                                        </tr>
+                                    @endif
                                 @endforeach
                             </tbody>
                         </table>
